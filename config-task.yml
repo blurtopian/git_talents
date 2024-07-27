@@ -43,16 +43,10 @@ requirementsTags:
   - type: STORAGE
     value: '5 GB'
   - type: TASK_VARIABLE
-    value: 'TEST_KEYWORD'
-    description: 'keyword to use for searching github.'
-  - type: TASK_VARIABLE
-    value: 'GIT_REPO'
-    description: 'Link to repo whose issues, pull requests, and commits will be retrieved'
-  - type: TASK_VARIABLE
     value: 'GIT_ACCESS_TOKEN'
     description: 'Token to use access github repositories.'
 
-task_id: '7ructXToXscsB6sSdjtN3m9iqj7Sm6GzRfeJ8aA2akTt'
+task_id: ' '
 
 # Provide the description for changes made in new version of task
-migrationDescription: 'Added checking for repo size and updated task image.'
+migrationDescription: ''

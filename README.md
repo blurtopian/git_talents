@@ -1,6 +1,6 @@
-# Git Archiver
+# Git Talents
 
-Archives the commit and contributions done on certain git repository.
+Queries/streams github for source code contributions and ticket issues archiving / retrieving contributions andmaking thsi data available via API.
 
 ## How to Setup
 
