@@ -1,5 +1,5 @@
 const { namespaceWrapper } = require('../namespaceWrapper');
-const Data = require('../model/data');
+const Data = require('../models/data');
 
 /**
  * namespaceWrapper is a class that handles the Twitter searcher and validator

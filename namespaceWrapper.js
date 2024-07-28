@@ -11,7 +11,7 @@
 
 const { default: axios } = require('axios');
 const { TASK_ID, SECRET_KEY, TASK_NODE_PORT } = require('./init');
-const { Connection, PublicKey, Keypair } = require('@_koi/web3.js');
+const { Connection, PublicKey, Keypair } = require('@_koii/web3.js');
 const Datastore = require('nedb-promises');
 const { createHash } = require('crypto');
 const semver = require('semver');
