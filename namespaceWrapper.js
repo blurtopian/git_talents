@@ -20,6 +20,7 @@ const BASE_ROOT_URL = `http://localhost:${TASK_NODE_PORT}/namespace-wrapper`;
 let connection;
 
 class NamespaceWrapper {
+  #db;
   #dbs;
   #talentsDb;
   #committersDb;
@@ -35,6 +36,7 @@ class NamespaceWrapper {
     if (taskNodeAdministered) {
       this.initializeDBs();
     } else {
+      this.#db = Datastore.create('./localKOIIDB.db');
       this.#talentsDb = Datastore.create('./localTalentsDB.db');
       this.#committersDb = Datastore.create('./localCommittersDB.db');
       this.#reportersDb = Datastore.create('./localReportersDB.db');
@@ -50,17 +52,75 @@ class NamespaceWrapper {
   }
 
   async initializeDBs() {
-    if (this.#talentsDb
+    if (this.#db
+      && this.#talentsDb
       && this.#committersDb
       && this.#reportersDb
       && this.#pullRequestorsDb
     ) {
       return;
     }
+    this.initializeDB();
     this.initializeTalentsDB();
     this.initializeCommittersDB();
     this.initializeReportersDB();
-    this.initializeRullRequestorsDB();
+    this.initializePullRequestorsDB();
+  }
+
+  async initializeDB() {
+    if (this.#db) return;
+    try {
+      if (taskNodeAdministered) {
+        const path = await this.getTaskLevelDBPath('KOIIDB');
+        this.#db = Datastore.create(path);
+      } else {
+        this.#db = Datastore.create('./localKOIIDB.db');
+      }
+    } catch (e) {
+      this.#db = Datastore.create(`../namespace/${TASK_ID}/KOIILevelDB.db`);
+    }
+  }
+
+  async getDb() {
+    if (this.#db) return this.#db;
+    await this.initializeDB();
+    return this.#db;
+  }
+  /**
+   * Namespace wrapper of storeGetAsync
+   * @param {string} key // Path to get
+   */
+  async storeGet(key) {
+    try {
+      await this.initializeDB();
+      const resp = await this.#db.findOne({ key: key });
+      if (resp) {
+        return resp[key];
+      } else {
+        return null;
+      }
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+  /**
+   * Namespace wrapper over storeSetAsync
+   * @param {string} key Path to set
+   * @param {*} value Data to set
+   */
+  async storeSet(key, value) {
+    try {
+      await this.initializeDB();
+      await this.#db.update(
+        { key: key },
+        { [key]: value, key },
+        { upsert: true },
+      );
+    } catch (e) {
+      console.error(e);
+      return undefined;
+    }
   }
 
   async initializeTalentsDB() {
@@ -159,10 +219,10 @@ class NamespaceWrapper {
    * @param {string} key Path to set
    * @param {*} value Data to set
    */
-  async insertTalent(talent) {
+  async insertTalent(talent, roundNumber) {
     try {
       await this.initializeTalentsDB();
-      const newDoc = await this.#talentsDb.insert(talent);
+      const newDoc = await this.#talentsDb.insert({ ...talent, round });
       return newDoc;
     } catch (e) {
       console.error(e);
@@ -189,6 +249,64 @@ class NamespaceWrapper {
     }
   }
   
+  /**
+   * Namespace wrapper of storeGetAsync
+   * @param {string} key // Path to get
+   */
+  async findTalents(round) {
+    try {
+      await this.initializeTalentsDB();
+      const resp = await this.#talentsDb.find({ round });
+      if (resp) {
+        return resp;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
+  /**
+   * Namespace wrapper over storeSetAsync
+   * @param {string} key Path to set
+   * @param {*} value Data to set
+   */
+  async insertCommitters(committers, round) {
+    try {
+      await this.initializeCommittersDB();
+      let committersWithRound = committers.map(committer => {
+        committer.round = round;
+        return committer;
+      });
+      const newDocs = await this.#committersDb.insertMany(committersWithRound);
+      return newDocs;
+    } catch (e) {
+      console.error(e);
+      return undefined;
+    }
+  }
+
+  /**
+   * Namespace wrapper of storeGetAsync
+   * @param {string} key // Path to get
+   */
+  async findCommitters(round) {
+    try {
+      await this.initializeCommittersDB();
+      const resp = await this.#committersDb.find({ round });
+      if (resp) {
+        return resp;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
 
   // /**
   //  * Namespace wrapper of storeGetAsync
@@ -602,6 +720,26 @@ class NamespaceWrapper {
         submission_value:
           this.#testingStakingSystemAccount.publicKey.toBase58(),
         slot: 200,
+        round: 1,
+      };
+    }
+  }
+
+  async checkCommittersSubmissionAndUpdateRound(submissionValue = [], round) {
+    if (taskNodeAdministered) {
+      return await genericHandler(
+        'checkSubmissionAndUpdateRound',
+        submissionValue,
+        round,
+      );
+    } else {
+      if (!this.#testingTaskState.submissions[round])
+        this.#testingTaskState.submissions[round] = {};
+      this.#testingTaskState.submissions[round][
+        this.#testingStakingSystemAccount.publicKey.toBase58()
+      ] = {
+        submission_value: submissionValue,
+        slot: 100,
         round: 1,
       };
     }

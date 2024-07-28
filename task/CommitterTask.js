@@ -15,15 +15,28 @@ class CommitterTask {
   }
 
   async getLatest() {
+    const commits = await this.getLatestCommits();
+    return commits;
+  }
+
+  async getLatestCommits() {
+    const searchCommitsUrl = `${GITHUB_API_URL}/search/commits`;
+    const params = {
+      q: 'sort:committer-date-desc',
+    };
+  
+    const headers = {
+      Authorization: `token ${ACCESS_TOKEN}`,
+      Accept: 'application/vnd.github.cloak-preview', // This header is required for the commits search endpoint
+    };
+  
     try {
-      // TODO;
-      return 'Not yet implemented.';
+      const response = await axios.get(searchCommitsUrl, { headers, params });
+      const commits = response.data.items;
     } catch (error) {
-      console.error('Error getting latest:', error);
-    } finally {
-      // Clean up: remove the temporary directory if needed
-      // (Implement cleanup logic here if desired)
+      console.error(`Failed to fetch commits: ${error.response.status}`);
     }
+
   }
 
 }

@@ -16,12 +16,10 @@ class Submission {
   async talentTask(round) {
     try {
       console.log('task called with round', round);
-      const randomRepo = await searchRandomRepo();
-      console.log('randomRepo.clone_url', randomRepo.clone_url)
       const talent = talentTask.getLatest();
-
-      await namespaceWrapper.insertTalent(talent);
-      return 'Done';
+      console.log('talent', talent)
+      await namespaceWrapper.insertTalent(talent, round);
+      return talent;
     } catch (err) {
       console.error('ERROR IN EXECUTING TASK', err);
       return 'ERROR IN EXECUTING TASK' + err;
@@ -31,60 +29,79 @@ class Submission {
   async committerTask(round) {
     try {
       console.log('task called with round', round);
-      const randomRepo = await searchRandomRepo();
-      console.log('randomRepo.clone_url', randomRepo.clone_url)
-      gitCommitters.getLatestCommits();
-      await gitTask.clone();
-      await gitTask.zipRepo();
-      const cid = await gitTask.storeFile();
-      await gitTask.cleanup();
-
-      await namespaceWrapper.storeSet('cid', cid);
-      return 'Done';
+      const committers = committerTask.getLatest();
+      console.log('committers', committers)
+      const insertedCommitters = await namespaceWrapper.insertCommitters(talent, round);
+      return insertedCommitters;
     } catch (err) {
-      console.error('ERROR IN EXECUTING TASK', err);
-      return 'ERROR IN EXECUTING TASK' + err;
+      console.error('ERROR IN COMMITTERS TASK', err);
+      return 'ERROR IN COMMITTERS TASK' + err;
     }
   }
 
-  async reportersTask(round) {
+  async reporterTask(round) {
     try {
-      console.log('task called with round', round);
-      const randomRepo = await searchRandomRepo();
-      console.log('randomRepo.clone_url', randomRepo.clone_url)
-      gitCommitters.getLatestCommits();
-      await gitTask.clone();
-      await gitTask.zipRepo();
-      const cid = await gitTask.storeFile();
-      await gitTask.cleanup();
-
-      await namespaceWrapper.storeSet('cid', cid);
-      return 'Done';
+      return 'TODO: Report Task';
     } catch (err) {
       console.error('ERROR IN EXECUTING TASK', err);
       return 'ERROR IN EXECUTING TASK' + err;
     }
   }
 
-  async pullRequestorsTask(round) {
+  async pullRequestorTask(round) {
     try {
-      console.log('task called with round', round);
-      const randomRepo = await searchRandomRepo();
-      console.log('randomRepo.clone_url', randomRepo.clone_url)
-      gitCommitters.getLatestCommits();
-      await gitTask.clone();
-      await gitTask.zipRepo();
-      const cid = await gitTask.storeFile();
-      await gitTask.cleanup();
-
-      await namespaceWrapper.storeSet('cid', cid);
-      return 'Done';
+      return 'TODO: Pull Requestor Task';
     } catch (err) {
       console.error('ERROR IN EXECUTING TASK', err);
       return 'ERROR IN EXECUTING TASK' + err;
     }
   }
 
+  async submitCommittersTask(roundNumber) {
+    console.log('submitTask called with round', roundNumber);
+    try {
+      const submission = await this.fetchCommittersSubmission(roundNumber);
+      console.log('COMMITTERS SUBMISSION', submission);
+      await namespaceWrapper.checkSubmissionAndUpdateRound(
+        submission,
+        roundNumber,
+      );
+
+      console.log('after the submission call');
+    } catch (error) {
+      console.log('error in submission', error);
+    }
+  }
+
+  async fetchCommittersSubmission(round) {
+    console.log('fetchCommittersSubmission called with round', round);
+    const committers = await namespaceWrapper.findCommitters(round);
+    console.log('committers', committers);
+    return committers;
+  }
+
+  async submitTalentTask(roundNumber) {
+    console.log('submitTask called with round', roundNumber);
+    try {
+      const submission = await this.fetchTalentSubmission(roundNumber);
+      console.log('TALENT SUBMISSION', submission);
+      await namespaceWrapper.checkSubmissionAndUpdateRound(
+        submission,
+        roundNumber,
+      );
+
+      console.log('after the submission call');
+    } catch (error) {
+      console.log('error in submission', error);
+    }
+  }
+
+  async fetchTalentSubmission(round) {
+    console.log('fetchSubmission called with round', round);
+    const talents = await namespaceWrapper.findTalents(round);
+    console.log('talents', talents);
+    return talents;
+  }
 
   async submitTask(roundNumber) {
     console.log('submitTask called with round', roundNumber);

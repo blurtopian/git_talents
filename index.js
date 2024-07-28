@@ -33,22 +33,22 @@ if (app) {
   });
 
   app.get('/talents_task', async (req, res) => {
-    let result = await submission.talentsTask(0);
+    let result = await submission.talentTask(0);
     res.status(200).json({ result });
   });
 
   app.get('/committers_task', async (req, res) => {
-    let result = await submission.committersTask(0);
+    let result = await submission.committerTask(0);
     res.status(200).json({ result });
   });
 
   app.get('/reporters_task', async (req, res) => {
-    let result = await submission.reportersTask(0);
+    let result = await submission.reporterTask(0);
     res.status(200).json({ result });
   });
 
   app.get('/pullrequestors_task', async (req, res) => {
-    let result = await submission.pullRequestorsTask(0);
+    let result = await submission.pullRequestorTask(0);
     res.status(200).json({ result });
   });
 
