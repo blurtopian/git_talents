@@ -1,12 +1,34 @@
 const { namespaceWrapper } = require('../namespaceWrapper');
 const { gitCommitters } = require('./GitCommitters');
 const { searchRandomRepo } = require('./github');
+
+
+const { talentTask } = require('./TalentTask');
+const { committerTask } = require('./CommitterTask');
+const { reporterTask } = require('./ReporterTask');
+const { pullRequestorTask } = require('./PullRequestorTask');
+
 const fs = require('fs');
 
 class Submission {
   constructor() {}
 
-  async task(round) {
+  async talentTask(round) {
+    try {
+      console.log('task called with round', round);
+      const randomRepo = await searchRandomRepo();
+      console.log('randomRepo.clone_url', randomRepo.clone_url)
+      const talent = talentTask.getLatest();
+
+      await namespaceWrapper.insertTalent(talent);
+      return 'Done';
+    } catch (err) {
+      console.error('ERROR IN EXECUTING TASK', err);
+      return 'ERROR IN EXECUTING TASK' + err;
+    }
+  }
+
+  async committerTask(round) {
     try {
       console.log('task called with round', round);
       const randomRepo = await searchRandomRepo();
@@ -24,6 +46,45 @@ class Submission {
       return 'ERROR IN EXECUTING TASK' + err;
     }
   }
+
+  async reportersTask(round) {
+    try {
+      console.log('task called with round', round);
+      const randomRepo = await searchRandomRepo();
+      console.log('randomRepo.clone_url', randomRepo.clone_url)
+      gitCommitters.getLatestCommits();
+      await gitTask.clone();
+      await gitTask.zipRepo();
+      const cid = await gitTask.storeFile();
+      await gitTask.cleanup();
+
+      await namespaceWrapper.storeSet('cid', cid);
+      return 'Done';
+    } catch (err) {
+      console.error('ERROR IN EXECUTING TASK', err);
+      return 'ERROR IN EXECUTING TASK' + err;
+    }
+  }
+
+  async pullRequestorsTask(round) {
+    try {
+      console.log('task called with round', round);
+      const randomRepo = await searchRandomRepo();
+      console.log('randomRepo.clone_url', randomRepo.clone_url)
+      gitCommitters.getLatestCommits();
+      await gitTask.clone();
+      await gitTask.zipRepo();
+      const cid = await gitTask.storeFile();
+      await gitTask.cleanup();
+
+      await namespaceWrapper.storeSet('cid', cid);
+      return 'Done';
+    } catch (err) {
+      console.error('ERROR IN EXECUTING TASK', err);
+      return 'ERROR IN EXECUTING TASK' + err;
+    }
+  }
+
 
   async submitTask(roundNumber) {
     console.log('submitTask called with round', roundNumber);

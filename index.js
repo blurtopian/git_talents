@@ -32,11 +32,26 @@ if (app) {
     res.status(200).json({ data: 'none' });
   });
 
-  // Sample API that return the value stored in NeDB
-  app.get('/task', async (req, res) => {
-    let result = await submission.task(0);
+  app.get('/talents_task', async (req, res) => {
+    let result = await submission.talentsTask(0);
     res.status(200).json({ result });
   });
+
+  app.get('/committers_task', async (req, res) => {
+    let result = await submission.committersTask(0);
+    res.status(200).json({ result });
+  });
+
+  app.get('/reporters_task', async (req, res) => {
+    let result = await submission.reportersTask(0);
+    res.status(200).json({ result });
+  });
+
+  app.get('/pullrequestors_task', async (req, res) => {
+    let result = await submission.pullRequestorsTask(0);
+    res.status(200).json({ result });
+  });
+
 }
 
 async function setup() {

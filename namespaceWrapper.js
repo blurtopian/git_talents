@@ -154,6 +154,41 @@ class NamespaceWrapper {
     return this.#pullRequestorsDb;
   }
 
+  /**
+   * Namespace wrapper over storeSetAsync
+   * @param {string} key Path to set
+   * @param {*} value Data to set
+   */
+  async insertTalent(talent) {
+    try {
+      await this.initializeTalentsDB();
+      const newDoc = await this.#talentsDb.insert(talent);
+      return newDoc;
+    } catch (e) {
+      console.error(e);
+      return undefined;
+    }
+  }
+
+  /**
+   * Namespace wrapper of storeGetAsync
+   * @param {string} key // Path to get
+   */
+  async getTalent(_id) {
+    try {
+      await this.initializeTalentsDB();
+      const resp = await this.#talentsDb.findOne({ _id });
+      if (resp) {
+        return resp;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+  
 
   // /**
   //  * Namespace wrapper of storeGetAsync
