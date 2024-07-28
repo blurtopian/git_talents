@@ -1,8 +1,8 @@
 # Name and metadata of your task
-task_name: 'Git Archiver'
+task_name: 'Git Talents'
 author: 'East'
 description: 'A simple git task that gets a random repository, zips it, and upload it to IPFS. Useful for making backup of copies repositories for any unwanted event.'
-repositoryUrl: 'https://github.com/blurtopian/git_archiver' #replace with your own repo url
+repositoryUrl: 'https://github.com/blurtopian/git_talents' #replace with your own repo url
 imageUrl: 'https://i.ibb.co/N1H5YB4/final-uploaded-image-with-gradient.png'
 # network value can be DEVELOPMENT , ARWEAVE or IPFS, Recommended IPFS when deploying to testnet as the cli automatically takes care of uploading the executable with the help of web3.js key
 task_executable_network: 'IPFS'

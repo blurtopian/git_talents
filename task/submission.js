@@ -1,6 +1,5 @@
 const { namespaceWrapper } = require('@_koii/namespace-wrapper');
-const { KoiiStorageClient } = require('@_koii/storage-task-sdk');
-const { gitTask } = require('./GitTask');
+const { gitCommitters } = require('./GitCommitters');
 const { searchRandomRepo } = require('./github');
 const fs = require('fs');
 
@@ -12,7 +11,7 @@ class Submission {
       console.log('task called with round', round);
       const randomRepo = await searchRandomRepo();
       console.log('randomRepo.clone_url', randomRepo.clone_url)
-      gitTask.setRepo(randomRepo);
+      gitCommitters.getLatestCommits();
       await gitTask.clone();
       await gitTask.zipRepo();
       const cid = await gitTask.storeFile();

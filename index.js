@@ -1,11 +1,12 @@
 const { coreLogic } = require('./coreLogic');
-const { searchRandomRepo } = require('./task/github');
-const { submission } = require('./task/submission');
+const { app } = require('./init');
 const {
   namespaceWrapper,
   taskNodeAdministered,
-  app,
-} = require('@_koii/namespace-wrapper');
+} = require('./namespaceWrapper');
+
+const { searchRandomRepo } = require('./task/github');
+const { submission } = require('./task/submission');
 
 if (app) {
   //  Write your Express Endpoints here.
