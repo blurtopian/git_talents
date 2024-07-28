@@ -20,7 +20,12 @@ const BASE_ROOT_URL = `http://localhost:${TASK_NODE_PORT}/namespace-wrapper`;
 let connection;
 
 class NamespaceWrapper {
-  #db;
+  #dbs;
+  #talentsDb;
+  #committersDb;
+  #reportersDb;
+  #pullRequestorsDb;
+
   #testingMainSystemAccount;
   #testingStakingSystemAccount;
   #testingTaskState;
@@ -28,68 +33,164 @@ class NamespaceWrapper {
 
   constructor() {
     if (taskNodeAdministered) {
-      this.initializeDB();
+      this.initializeDBs();
     } else {
-      this.#db = Datastore.create('./localKOIIDB.db');
+      this.#talentsDb = Datastore.create('./localTalentsDB.db');
+      this.#committersDb = Datastore.create('./localCommittersDB.db');
+      this.#reportersDb = Datastore.create('./localReportersDB.db');
+      this.#pullRequestorsDb = Datastore.create('./localPullRequestorsDB.db');
+      this.dbs = [
+        this.#talentsDb,
+        this.#committersDb,
+        this.#reportersDb,
+        this.#pullRequestorsDb,
+      ];
       this.defaultTaskSetup();
     }
   }
 
-  async initializeDB() {
-    if (this.#db) return;
+  async initializeDBs() {
+    if (this.#talentsDb
+      && this.#committersDb
+      && this.#reportersDb
+      && this.#pullRequestorsDb
+    ) {
+      return;
+    }
+    this.initializeTalentsDB();
+    this.initializeCommittersDB();
+    this.initializeReportersDB();
+    this.initializeRullRequestorsDB();
+  }
+
+  async initializeTalentsDB() {
+    if (this.#talentsDb) {
+      return;
+    }
     try {
       if (taskNodeAdministered) {
-        const path = await this.getTaskLevelDBPath();
-        this.#db = Datastore.create(path);
+        const talentsDbPath = await this.getTaskLevelDBPath('talents');
+        this.#talentsDb = Datastore.create(talentsDbPath);
       } else {
-        this.#db = Datastore.create('./localKOIIDB.db');
+        this.#talentsDb = Datastore.create('./localTalents.db');
       }
     } catch (e) {
-      this.#db = Datastore.create(`../namespace/${TASK_ID}/KOIILevelDB.db`);
+      this.#talentsDb = Datastore.create(`../namespace/${TASK_ID}/talents.db`);
     }
   }
 
-  async getDb() {
-    if (this.#db) return this.#db;
-    await this.initializeDB();
-    return this.#db;
-  }
-  /**
-   * Namespace wrapper of storeGetAsync
-   * @param {string} key // Path to get
-   */
-  async storeGet(key) {
+  async initializeCommittersDB() {
+    if (this.#committersDb) {
+      return;
+    }
     try {
-      await this.initializeDB();
-      const resp = await this.#db.findOne({ key: key });
-      if (resp) {
-        return resp[key];
+      if (taskNodeAdministered) {
+        const committersDbPath = await this.getTaskLevelDBPath('committers');
+        this.#committersDb = Datastore.create(committersDbPath);
       } else {
-        return null;
+        this.#committersDb = Datastore.create('./localCommitters.db');
       }
     } catch (e) {
-      console.error(e);
-      return null;
+      this.#committersDb = Datastore.create(`../namespace/${TASK_ID}/committers.db`);
     }
   }
-  /**
-   * Namespace wrapper over storeSetAsync
-   * @param {string} key Path to set
-   * @param {*} value Data to set
-   */
-  async storeSet(key, value) {
+
+  async initializeReportersDB() {
+    if (this.#reportersDb) {
+      return;
+    }
     try {
-      await this.initializeDB();
-      await this.#db.update(
-        { key: key },
-        { [key]: value, key },
-        { upsert: true },
-      );
+      if (taskNodeAdministered) {
+        const reportersDbPath = await this.getTaskLevelDBPath('reporters');
+        this.#reportersDb = Datastore.create(reportersDbPath);
+      } else {
+        this.#reportersDb = Datastore.create('./localReporters.db');
+      }
     } catch (e) {
-      console.error(e);
-      return undefined;
+      this.#reportersDb = Datastore.create(`../namespace/${TASK_ID}/reporters.db`);
     }
   }
+
+  async initializePullRequestorsDB() {
+    if (this.#pullRequestorsDb) {
+      return;
+    }
+    try {
+      if (taskNodeAdministered) {
+        const pullRequestorsDbPath = await this.getTaskLevelDBPath('pullrequestors');
+        this.#pullRequestorsDb = Datastore.create(pullRequestorsDbPath);
+      } else {
+        this.#pullRequestorsDb = Datastore.create('./localPullRequestors.db');
+      }
+    } catch (e) {
+      this.#pullRequestorsDb = Datastore.create(`../namespace/${TASK_ID}/pullrequestors.db`);
+    }
+  }
+
+  async getDbs() {
+    if (this.#dbs) return this.#dbs;
+    await this.initializeDBs();
+    return this.#dbs;
+  }
+
+  async getTalentsDb() {
+    if (this.#talentsDb) return this.#talentsDb;
+    await this.initializeTalentsDB();
+    return this.#talentsDb;
+  }
+  async getCommittersDb() {
+    if (this.#committersDb) return this.#committersDb;
+    await this.initializeCommittersDB();
+    return this.#committersDb;
+  }
+  async getReportersDb() {
+    if (this.#reportersDb) return this.#reportersDb;
+    await this.initializeReportersDB();
+    return this.#reportersDb;
+  }
+  async getPullRequestorsDb() {
+    if (this.#pullRequestorsDb) return this.#pullRequestorsDb;
+    await this.initializePullRequestorsDB();
+    return this.#pullRequestorsDb;
+  }
+
+
+  // /**
+  //  * Namespace wrapper of storeGetAsync
+  //  * @param {string} key // Path to get
+  //  */
+  // async storeGet(key) {
+  //   try {
+  //     await this.initializeDB();
+  //     const resp = await this.#db.findOne({ key: key });
+  //     if (resp) {
+  //       return resp[key];
+  //     } else {
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     console.error(e);
+  //     return null;
+  //   }
+  // }
+  // /**
+  //  * Namespace wrapper over storeSetAsync
+  //  * @param {string} key Path to set
+  //  * @param {*} value Data to set
+  //  */
+  // async storeSet(key, value) {
+  //   try {
+  //     await this.initializeDB();
+  //     await this.#db.update(
+  //       { key: key },
+  //       { [key]: value, key },
+  //       { upsert: true },
+  //     );
+  //   } catch (e) {
+  //     console.error(e);
+  //     return undefined;
+  //   }
+  // }
 
   /**
    * Namespace wrapper over fsPromises methods
@@ -831,11 +932,11 @@ class NamespaceWrapper {
   }
 
   
-  async getTaskLevelDBPath() {
+  async getTaskLevelDBPath(dbName) {
     if (taskNodeAdministered) {
-      return await genericHandler('getTaskLevelDBPath');
+      return await genericHandler('getTaskLevelDBPath', dbName);
     } else {
-      return './KOIIDB';
+      return `./${dbName}`;
     }
   }
   async getBasePath() {
