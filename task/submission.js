@@ -1,4 +1,4 @@
-const { namespaceWrapper } = require('../namespaceWrapper');
+const { namespaceWrapper } = require('@_koii/namespace-wrapper');
 const { gitCommitters } = require('./GitCommitters');
 const { searchRandomRepo } = require('./github');
 
@@ -13,6 +13,24 @@ const fs = require('fs');
 class Submission {
   constructor() {}
 
+  async committersTask(round) {
+    try {
+      console.log('task called with round', round);
+      const committersData = committerTask.getLatest();
+      console.log('committersData', committersData);
+      const analysisResult = committerTask.analyze();
+      console.log('analysisResult', analysisResult);
+
+      // const committers = await namespaceWrapper.insertCommitters(committersData, round);
+      // const cid = await committerTask.uploadCommitters(committers, round);
+      // return cid;
+      return 'Done';
+    } catch (err) {
+      console.error('ERROR IN COMMITTERS TASK', err);
+      return 'ERROR IN COMMITTERS TASK' + err;
+    }
+  }
+
   async talentTask(round) {
     try {
       console.log('task called with round', round);
@@ -23,19 +41,6 @@ class Submission {
     } catch (err) {
       console.error('ERROR IN EXECUTING TASK', err);
       return 'ERROR IN EXECUTING TASK' + err;
-    }
-  }
-
-  async committerTask(round) {
-    try {
-      console.log('task called with round', round);
-      const committers = committerTask.getLatest();
-      console.log('committers', committers)
-      const insertedCommitters = await namespaceWrapper.insertCommitters(talent, round);
-      return insertedCommitters;
-    } catch (err) {
-      console.error('ERROR IN COMMITTERS TASK', err);
-      return 'ERROR IN COMMITTERS TASK' + err;
     }
   }
 

@@ -1,5 +1,5 @@
 const { KoiiStorageClient } = require('@_koii/storage-task-sdk');
-const { namespaceWrapper } = require('../namespaceWrapper');
+const { namespaceWrapper } = require('@_koii/namespace-wrapper');
 const fs = require('fs');
 const archiver = require('archiver');
 const simpleGit = require('simple-git');

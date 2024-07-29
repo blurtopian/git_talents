@@ -1,9 +1,9 @@
 const { coreLogic } = require('./coreLogic');
-const { app } = require('./init');
 const {
   namespaceWrapper,
   taskNodeAdministered,
-} = require('./namespaceWrapper');
+  app,
+} = require('@_koii/namespace-wrapper');
 
 const { searchRandomRepo } = require('./task/github');
 const { submission } = require('./task/submission');
@@ -38,7 +38,7 @@ if (app) {
   });
 
   app.get('/committers_task', async (req, res) => {
-    let result = await submission.committerTask(0);
+    let result = await submission.committersTask(0);
     res.status(200).json({ result });
   });
 

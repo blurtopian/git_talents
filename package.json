@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@_koii/namespace-wrapper": "^1.0.1",
     "@_koii/storage-task-sdk": "^1.2.4",
     "@_koii/web3.js": "^0.1.11",
     "archiver": "^7.0.1",

@@ -1,4 +1,4 @@
-const { namespaceWrapper } = require('../namespaceWrapper');
+const { namespaceWrapper } = require('@_koii/namespace-wrapper');
 const { gitTask } = require('./GitTask');
 
 class Audit {
