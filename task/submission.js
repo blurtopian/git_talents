@@ -16,10 +16,8 @@ class Submission {
   async committersTask(round) {
     try {
       console.log('task called with round', round);
-      const committersData = await committerTask.getLatest();
-      console.log('committersData', committersData);
+      const committersData = await committerTask.getLatestCommits();
       const analysisResult = await committerTask.analyze();
-      console.log('analysisResult', analysisResult);
 
       // const committers = await namespaceWrapper.insertCommitters(committersData, round);
       // const cid = await committerTask.uploadCommitters(committers, round);
