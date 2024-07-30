@@ -7,6 +7,7 @@ const { KoiiStorageClient } = require('@_koii/storage-task-sdk');
 const { namespaceWrapper } = require('@_koii/namespace-wrapper');
 const fs = require('fs');
 const languageMap = require('../constants/languageMap');
+const dateutil = require('../utils/dateutil');
 
 const GITHUB_API_URL = 'https://api.github.com';
 const ACCESS_TOKEN = process.env.GIT_ACCESS_TOKEN; // Replace with your actual token
@@ -14,6 +15,7 @@ const ACCESS_TOKEN = process.env.GIT_ACCESS_TOKEN; // Replace with your actual t
 class CommitterTask {
   constructor() {
     this.commits = [];
+    this.analysisResult = [];
   }
 
   async getLatest() {
@@ -60,12 +62,7 @@ class CommitterTask {
     // Filter commits from public repositories
     const publicCommits = this.commits.filter((commit, index) => !repoDetails[index].data.private);
 
-    publicCommits.forEach(commit => {
-      console.log(`Commit URL: ${commit.url}`);
-      console.log('-------------------------------------');
-    });
-
-    const updatedCommits = [];
+    this.analysisResult = [];
     const commitHeaders = {
       Authorization: `Bearer ${ACCESS_TOKEN}`,
       'X-GitHub-Api-Version': '2022-11-28',
@@ -79,7 +76,7 @@ class CommitterTask {
         const commitResp = await axios.get(commit.url, { commitHeaders });
         commit.languages = await this.inferLanguages(commitResp.data.files);
         console.log('commit.languages', commit.languages)
-        updatedCommits.push(commit);
+        this.analysisResult.push(commit);
       } catch(err) {
         console.log(err.message);
       } finally {
@@ -87,7 +84,7 @@ class CommitterTask {
       }
     }
 
-    return updatedCommits;
+    return this.analysisResult;
   }
 
 
@@ -107,12 +104,14 @@ class CommitterTask {
     return Array.from(languages);
   }
 
+  async persistResult(round) {
+    console.log('persistResult')
+  }
 
-  async uploadCommitters(committers) {
+  async storeResult(committers) {
     const basePath = await namespaceWrapper.getBasePath();
-    const repoName = this.repo.name;
-    const cloneDir = `${basePath}/${repoName}`;
-    const zipPath = `${cloneDir}.zip`;
+    const timestamp = dateutil.getTimestamp();
+    const zipPath = `${basePath}/${timestamp}.zip`;
     try {
       const client = new KoiiStorageClient();
       const userStaking = await namespaceWrapper.getSubmitterAccount();

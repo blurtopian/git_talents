@@ -2,18 +2,18 @@ const { namespaceWrapper } = require('@_koii/namespace-wrapper');
 const task = require('./task');
 
 class CoreLogic {
-  async task(round) {
-    const result = await task.submission.committersTask(round);
+  async task(round, models) {
+    const result = await task.submission.committersTask(round, models);
     return result;
   }
 
-  async submitTask(round) {
-    const talentsSubmission = await task.submission.submitTalentTask(round);
+  async submitTask(round, models) {
+    const talentsSubmission = await task.submission.submitTalentTask(round, models);
     return talentsSubmission;
   }
 
-  async auditTask(round) {
-    await task.audit.auditTask(round);
+  async auditTask(round, models) {
+    await task.audit.auditTask(round, models);
   }
 
   async selectAndGenerateDistributionList(

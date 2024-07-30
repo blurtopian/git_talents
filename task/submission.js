@@ -13,16 +13,14 @@ const fs = require('fs');
 class Submission {
   constructor() {}
 
-  async committersTask(round) {
+  async committersTask(round, models) {
     try {
       console.log('task called with round', round);
-      const committersData = await committerTask.getLatestCommits();
-      const analysisResult = await committerTask.analyze();
-
-      // const committers = await namespaceWrapper.insertCommitters(committersData, round);
-      // const cid = await committerTask.uploadCommitters(committers, round);
-      // return cid;
-      return 'Done';
+      await committerTask.getLatestCommits();
+      await committerTask.analyze();
+      //await committerTask.persistResult(round, models);
+      const cid = await committerTask.storeResult(round);
+      return cid;
     } catch (err) {
       console.error('ERROR IN COMMITTERS TASK', err);
       return 'ERROR IN COMMITTERS TASK' + err;
