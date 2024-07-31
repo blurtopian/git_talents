@@ -32,7 +32,9 @@ class CustomDB {
       return;
     }
     try {
-      const basePath = await namespaceWrapper.getBasePath();
+      const taskLevelDbPath = await namespaceWrapper.getTaskLevelDBPath();
+      const basePath = taskLevelDbPath.replace('/KOIIDB', '');
+  
       this.#talentsDb = Datastore.create(`${basePath}/talents.db`);
     } catch (e) {
       this.#talentsDb = Datastore.create(`../namespace/${TASK_ID}/talents.db`);
@@ -44,7 +46,9 @@ class CustomDB {
       return;
     }
     try {
-      const basePath = await namespaceWrapper.getBasePath();
+      const taskLevelDbPath = await namespaceWrapper.getTaskLevelDBPath();
+      const basePath = taskLevelDbPath.replace('/KOIIDB', '');
+  
       this.#committersDb = Datastore.create(`${basePath}/committers.db`);
     } catch (e) {
       this.#committersDb = Datastore.create(`../namespace/${TASK_ID}/committers.db`);
@@ -56,7 +60,9 @@ class CustomDB {
       return;
     }
     try {
-      const basePath = await namespaceWrapper.getBasePath();
+      const taskLevelDbPath = await namespaceWrapper.getTaskLevelDBPath();
+      const basePath = taskLevelDbPath.replace('/KOIIDB', '');
+  
       this.#reportersDb = Datastore.create(`${basePath}/reporters.db`);
     } catch (e) {
       this.#reportersDb = Datastore.create(`../namespace/${TASK_ID}/reporters.db`);
@@ -68,7 +74,9 @@ class CustomDB {
       return;
     }
     try {
-      const basePath = await namespaceWrapper.getBasePath();
+      const taskLevelDbPath = await namespaceWrapper.getTaskLevelDBPath();
+      const basePath = taskLevelDbPath.replace('/KOIIDB', '');
+  
       this.#pullRequestorsDb = Datastore.create(`${basePath}/pullrequestors.db`);
     } catch (e) {
       this.#pullRequestorsDb = Datastore.create(`../namespace/${TASK_ID}/pullrequestors.db`);
@@ -190,8 +198,6 @@ class CustomDB {
   }
 
 }
-
-
 
 const customDB = new CustomDB();
 module.exports = {

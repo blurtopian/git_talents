@@ -45,6 +45,10 @@ requirementsTags:
   - type: TASK_VARIABLE
     value: 'GIT_ACCESS_TOKEN'
     description: 'Token to use access github repositories.'
+  - type: TASK_VARIABLE
+    value: 'CONTRIB_AI_API'
+    description: 'API to grade contributions.'
+    
 
 task_id: ' '
 

@@ -1,12 +1,9 @@
 const { namespaceWrapper } = require('@_koii/namespace-wrapper');
-const { gitCommitters } = require('./GitCommitters');
 const { searchRandomRepo } = require('./github');
 
 
 const { talentTask } = require('./TalentTask');
 const { committerTask } = require('./CommitterTask');
-const { reporterTask } = require('./ReporterTask');
-const { pullRequestorTask } = require('./PullRequestorTask');
 
 const fs = require('fs');
 
@@ -18,8 +15,9 @@ class Submission {
       console.log('task called with round', round);
       await committerTask.getLatestCommits();
       await committerTask.analyze();
-      //await committerTask.persistResult(round, models);
-      const cid = await committerTask.storeResult(round);
+      await committerTask.persistResult(round);
+      //const cid = await committerTask.storeResult(round);
+      const cid = '';
       return cid;
     } catch (err) {
       console.error('ERROR IN COMMITTERS TASK', err);
@@ -32,7 +30,7 @@ class Submission {
       console.log('task called with round', round);
       const talent = talentTask.getLatest();
       console.log('talent', talent)
-      await namespaceWrapper.insertTalent(talent, round);
+      //await namespaceWrapper.insertTalent(talent, round);
       return talent;
     } catch (err) {
       console.error('ERROR IN EXECUTING TASK', err);
@@ -63,10 +61,10 @@ class Submission {
     try {
       const submission = await this.fetchCommittersSubmission(roundNumber);
       console.log('COMMITTERS SUBMISSION', submission);
-      await namespaceWrapper.checkSubmissionAndUpdateRound(
-        submission,
-        roundNumber,
-      );
+      // await namespaceWrapper.checkSubmissionAndUpdateRound(
+      //   submission,
+      //   roundNumber,
+      // );
 
       console.log('after the submission call');
     } catch (error) {
@@ -76,7 +74,8 @@ class Submission {
 
   async fetchCommittersSubmission(round) {
     console.log('fetchCommittersSubmission called with round', round);
-    const committers = await namespaceWrapper.findCommitters(round);
+    //const committers = await namespaceWrapper.findCommitters(round);
+    const committers = [];
     console.log('committers', committers);
     return committers;
   }
@@ -84,12 +83,13 @@ class Submission {
   async submitTalentTask(roundNumber) {
     console.log('submitTask called with round', roundNumber);
     try {
-      const submission = await this.fetchTalentSubmission(roundNumber);
+      //const submission = await this.fetchTalentSubmission(roundNumber);
+      const submission = [];
       console.log('TALENT SUBMISSION', submission);
-      await namespaceWrapper.checkSubmissionAndUpdateRound(
-        submission,
-        roundNumber,
-      );
+      // await namespaceWrapper.checkSubmissionAndUpdateRound(
+      //   submission,
+      //   roundNumber,
+      // );
 
       console.log('after the submission call');
     } catch (error) {
@@ -99,7 +99,8 @@ class Submission {
 
   async fetchTalentSubmission(round) {
     console.log('fetchSubmission called with round', round);
-    const talents = await namespaceWrapper.findTalents(round);
+    //const talents = await namespaceWrapper.findTalents(round);
+    const talents = [];
     console.log('talents', talents);
     return talents;
   }

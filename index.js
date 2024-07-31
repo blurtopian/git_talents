@@ -4,18 +4,21 @@ const {
   taskNodeAdministered,
   app,
 } = require('@_koii/namespace-wrapper');
-const mongoose = require('mongoose');
-const {
-  CommitterSchema, ContributionSchema,
-} = require('./schemas');
 
 const { searchRandomRepo } = require('./task/github');
 const { submission } = require('./task/submission');
+const { customDB } = require('./customDB');
 
-var mongoDb = mongoose.createConnection(process.env.MONGODB_URI, {useNewUrlParser: true});
-const Committer = mongoDb.model('Committer', CommitterSchema);
-const Contribution = mongoDb.model('Contribution', ContributionSchema);
-const models = { Committer, Contribution };
+// const mongoose = require('mongoose');
+// const {
+//   CommitterSchema, ContributionSchema,
+// } = require('./schemas');
+// var mongoDb = mongoose.createConnection(process.env.MONGODB_URI, {useNewUrlParser: true});
+// const Committer = mongoDb.model('Committer', CommitterSchema);
+// const Contribution = mongoDb.model('Contribution', ContributionSchema);
+// const models = { Committer, Contribution };
+
+const models = { };
 
 if (app) {
   //  Write your Express Endpoints here.
@@ -49,6 +52,12 @@ if (app) {
   app.get('/committers_task', async (req, res) => {
     let result = await submission.committersTask(0);
     res.status(200).json({ result });
+  });
+
+  app.get('/committers', async (req, res) => {
+    const committersDb = await customDB.getCommittersDb();
+    const committers = await committersDb.find({});
+    res.status(200).json({ result: committers });
   });
 
   app.get('/reporters_task', async (req, res) => {

@@ -1,13 +1,14 @@
-const axios = require('axios');
-const archiver = require('archiver');
-const simpleGit = require('simple-git');
-const git = simpleGit();
-
 const { KoiiStorageClient } = require('@_koii/storage-task-sdk');
 const { namespaceWrapper } = require('@_koii/namespace-wrapper');
+const { customDB } = require('../customDB');
+
+const axios = require('axios');
+const archiver = require('archiver');
+
 const fs = require('fs');
 const languageMap = require('../constants/languageMap');
 const dateutil = require('../utils/dateutil');
+const { contribAi } = require('./ContribAi');
 
 const GITHUB_API_URL = 'https://api.github.com';
 const ACCESS_TOKEN = process.env.GIT_ACCESS_TOKEN; // Replace with your actual token
@@ -71,11 +72,19 @@ class CommitterTask {
 
     for (let i = 0; i < publicCommits.length; i++) {
       let commit = publicCommits[i];
-
       try {
         const commitResp = await axios.get(commit.url, { commitHeaders });
         commit.languages = await this.inferLanguages(commitResp.data.files);
         console.log('commit.languages', commit.languages)
+
+        const owner = commit.repository.owner.login;
+        const repo = commit.repository.name;
+        const hash = commit.sha;
+        console.log('gradeContrib params', {owner, repo, hash})
+
+        const contribGrade = await contribAi.gradeContrib(owner, repo, hash);
+        commit.grade = contribGrade;
+
         this.analysisResult.push(commit);
       } catch(err) {
         console.log(err.message);
@@ -106,23 +115,33 @@ class CommitterTask {
 
   async persistResult(round) {
     console.log('persistResult')
+    const committersDb = await customDB.getCommittersDb();
+    try {
+      await committersDb.insertMany(this.analysisResult);
+    } catch(err) {
+      console.log('persistResult err', err)
+    }
   }
 
-  async storeResult(committers) {
-    const basePath = await namespaceWrapper.getBasePath();
+  async storeResult(round) {
+    const taskLevelDbPath = await namespaceWrapper.getTaskLevelDBPath();
+    const basePath = taskLevelDbPath.replace('/KOIIDB', '');
     const timestamp = dateutil.getTimestamp();
     const zipPath = `${basePath}/${timestamp}.zip`;
+
+    // Write the data to a temp file
+    fs.writeFileSync(`${basePath}/${filename}`, JSON.stringify(data));
+
     try {
       const client = new KoiiStorageClient();
       const userStaking = await namespaceWrapper.getSubmitterAccount();
       const { cid } = await client.uploadFile(zipPath, userStaking);
-
       console.log(`Stored file CID: ${cid}`);
 
       return cid;
     } catch (error) {
       console.error('Failed to upload file to IPFS:', error);
-      fs.unlinkSync(`${basePath}/${filename}`);
+      fs.unlinkSync(zipPath);
       throw error;
     }
   }
