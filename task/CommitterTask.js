@@ -123,6 +123,16 @@ class CommitterTask {
     }
   }
 
+  async purgeDb() {
+    console.log('purgeDb')
+    const committersDb = await customDB.getCommittersDb();
+    try {
+      await committersDb.remove({}, { multi: true });
+    } catch(err) {
+      console.log('purgeDB err', err)
+    }
+  }
+
   async storeResult(round) {
     const taskLevelDbPath = await namespaceWrapper.getTaskLevelDBPath();
     const basePath = taskLevelDbPath.replace('/KOIIDB', '');
