@@ -1,9 +1,9 @@
 const { namespaceWrapper } = require('@_koii/namespace-wrapper');
-const { searchRandomRepo } = require('./github');
+const { getRandomRepo } = require('./github');
 
 
 const { talentTask } = require('./TalentTask');
-const { committerTask } = require('./CommitterTask');
+const { CommitterTask } = require('./CommitterTask');
 
 const fs = require('fs');
 
@@ -13,9 +13,12 @@ class Submission {
   async committersTask(round, models) {
     try {
       console.log('task called with round', round);
-      await committerTask.getLatestCommits();
-      await committerTask.analyze();
-      await committerTask.persistResult(round);
+      const repo = await getRandomRepo();
+
+      const task = new CommitterTask(repo); 
+      await task.getLatestCommits();
+      await task.analyze();
+      await task.persistResult(round);
       //const cid = await committerTask.storeResult(round);
       const cid = '';
       return cid;

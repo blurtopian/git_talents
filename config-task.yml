@@ -48,6 +48,9 @@ requirementsTags:
   - type: TASK_VARIABLE
     value: 'CONTRIB_AI_API'
     description: 'API to grade contributions.'
+  - type: TASK_VARIABLE
+    value: 'REPO_KEYWORD'
+    description: 'Keyword to search for in github repositories.'
     
 
 task_id: ' '
