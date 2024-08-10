@@ -10,7 +10,7 @@ const fs = require('fs');
 class Submission {
   constructor() {}
 
-  async committersTask(round, models) {
+  async committersTask(round) {
     try {
       console.log('task called with round', round);
       const repo = await getRandomRepo();

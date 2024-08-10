@@ -12,7 +12,7 @@ class Audit {
     }
   }
 
-  async auditTask(roundNumber, models) {
+  async auditTask(roundNumber) {
     console.log('auditTask called with round', roundNumber);
     console.log(
       await namespaceWrapper.getSlot(),

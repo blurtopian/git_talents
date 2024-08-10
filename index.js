@@ -9,15 +9,6 @@ const { getRandomRepo } = require('./task/github');
 const { submission } = require('./task/submission');
 const { customDB } = require('./customDB');
 
-// const mongoose = require('mongoose');
-// const {
-//   CommitterSchema, ContributionSchema,
-// } = require('./schemas');
-// var mongoDb = mongoose.createConnection(process.env.MONGODB_URI, {useNewUrlParser: true});
-// const Committer = mongoDb.model('Committer', CommitterSchema);
-// const Contribution = mongoDb.model('Contribution', ContributionSchema);
-// const models = { Committer, Contribution };
-
 if (app) {
   //  Write your Express Endpoints here.
   //  Ex. app.post('/accept-cid', async (req, res) => {})
@@ -85,13 +76,13 @@ async function setup() {
     console.log('CHILD got message:', m);
     if (m.functionCall == 'submitPayload') {
       console.log('submitPayload called');
-      coreLogic.submitTask(m.roundNumber, models);
+      coreLogic.submitTask(m.roundNumber);
     } else if (m.functionCall == 'auditPayload') {
       console.log('auditPayload called');
-      coreLogic.auditTask(m.roundNumber, models);
+      coreLogic.auditTask(m.roundNumber);
     } else if (m.functionCall == 'executeTask') {
       console.log('executeTask called');
-      coreLogic.task(m.roundNumber, models);
+      coreLogic.task(m.roundNumber);
     } else if (m.functionCall == 'generateAndSubmitDistributionList') {
       console.log('generateAndSubmitDistributionList called');
       coreLogic.selectAndGenerateDistributionList(m.roundNumber, m.isPreviousRoundFailed);
