@@ -14,19 +14,19 @@ const GITHUB_API_URL = 'https://api.github.com';
 const ACCESS_TOKEN = process.env.GIT_ACCESS_TOKEN; // Replace with your actual token
 
 class CommitterTask {
-  constructor() {
+  constructor(repo) {
+    this.repo = repo;
     this.commits = [];
     this.analysisResult = [];
   }
 
-  async getLatest() {
-    return await this.getLatestCommits();
-  }
-
   async getLatestCommits() {
-    const searchCommitsUrl = `${GITHUB_API_URL}/search/commits`;
+    console.log('repo', this.repo)
+    const owner = this.repo.owner.login;
+    const repoName = this.repo.name;
+
+    const searchCommitsUrl = `${GITHUB_API_URL}/repos/${owner}/${repoName}/commits`;
     const params = {
-      q: 'a', // Empty query to get all commits
       sort: 'committer-date',
       order: 'desc',
     };
@@ -74,7 +74,6 @@ class CommitterTask {
       try {
         const commitResp = await axios.get(commit.url, { commitHeaders });
         commit.languages = await this.inferLanguages(commitResp.data.files);
-        console.log('commit.languages', commit.languages)
 
         const owner = commit.repository.owner.login;
         const repo = commit.repository.name;
@@ -84,7 +83,14 @@ class CommitterTask {
         const contribGrade = await contribAi.gradeContrib(owner, repo, hash);
         commit.grade = contribGrade;
 
-        this.analysisResult.push(commit);
+        const returnObj = {
+          author: commit.commit.author.email,
+          hash: commit.sha,
+          languages: languages,
+          grade: contribGrade,
+        }
+
+        this.analysisResult.push(returnObj);
       } catch(err) {
         console.log(err.message);
       } finally {
@@ -99,11 +105,8 @@ class CommitterTask {
   // Function to infer languages from file extensions
   async inferLanguages(files) {
     const languages = new Set();
-
     files.forEach(file => {
-      console.log('file.filename', file.filename)
       const ext = file.filename.split('.').pop();
-      console.log('ext', ext)
       if (languageMap[ext]) {
         languages.add(languageMap[ext]);
       }
@@ -167,7 +170,6 @@ class CommitterTask {
 
 }
 
-const committerTask = new CommitterTask();
 module.exports = {
-  committerTask,
+  CommitterTask,
 };

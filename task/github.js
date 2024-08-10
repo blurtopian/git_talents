@@ -2,10 +2,10 @@ const axios = require('axios');
 
 const GITHUB_API_URL = 'https://api.github.com';
 const ACCESS_TOKEN = process.env.GIT_ACCESS_TOKEN; // Replace with your actual token
-const TEST_KEYWORD = process.env.TEST_KEYWORD; // You can change this to any keyword you like
+const REPO_KEYWORD = process.env.REPO_KEYWORD || 'random'; // You can change this to any keyword you like
 const MAX_REPO_SIZE_BYTES = 10 * 1024 * 1024; // Example condition: 100 MB
 
-async function searchRandomRepo() {
+async function getRandomRepo() {
   try {
     const response = await axios.get(
       `${GITHUB_API_URL}/search/repositories`,
@@ -15,8 +15,8 @@ async function searchRandomRepo() {
           Accept: 'application/vnd.github.v3+json',
         },
         params: {
-          q: TEST_KEYWORD,
-          sort: 'stars',
+          q: REPO_KEYWORD,
+          sort: 'updated',
           order: 'desc'
         }
       },
@@ -59,5 +59,5 @@ async function searchRandomRepo() {
 }
 
 module.exports = {
-  searchRandomRepo,
+  getRandomRepo,
 };

@@ -5,7 +5,7 @@ const {
   app,
 } = require('@_koii/namespace-wrapper');
 
-const { searchRandomRepo } = require('./task/github');
+const { getRandomRepo } = require('./task/github');
 const { submission } = require('./task/submission');
 const { customDB } = require('./customDB');
 
@@ -17,8 +17,6 @@ const { customDB } = require('./customDB');
 // const Committer = mongoDb.model('Committer', CommitterSchema);
 // const Contribution = mongoDb.model('Contribution', ContributionSchema);
 // const models = { Committer, Contribution };
-
-const models = { };
 
 if (app) {
   //  Write your Express Endpoints here.
@@ -40,7 +38,7 @@ if (app) {
 
   // Sample API that return the value stored in NeDB
   app.get('/github', async (req, res) => {
-    await searchRandomRepo();
+    await getRandomRepo();
     res.status(200).json({ data: 'none' });
   });
 
