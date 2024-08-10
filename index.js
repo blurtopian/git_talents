@@ -62,8 +62,8 @@ if (app) {
 
   app.delete('/committers_purge', async (req, res) => {
     const committersDb = await customDB.getCommittersDb();
-    await committersDb.remove({}, { multi: true });
-    res.status(200).json({ result: 'Purge Done!' });
+    const result =  await committersDb.remove({}, { multi: true });
+    res.status(200).json({ result: `Purge Done! ${result}` });
   });
 
   app.get('/reporters_task', async (req, res) => {

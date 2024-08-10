@@ -13,7 +13,8 @@ class Submission {
   async committersTask(round, models) {
     try {
       console.log('task called with round', round);
-      await committerTask.getLatestCommits();
+      const commits = await committerTask.getLatestCommits();
+      console.log('commits length', commits.length);
       await committerTask.analyze();
       await committerTask.persistResult(round);
       //const cid = await committerTask.storeResult(round);

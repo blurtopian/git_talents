@@ -29,7 +29,6 @@ class CommitterTask {
       q: 'a', // Empty query to get all commits
       sort: 'committer-date',
       order: 'desc',
-      per_page: 3 // Number of commits to fetch per page
     };
   
     const headers = {
@@ -114,10 +113,20 @@ class CommitterTask {
   }
 
   async persistResult(round) {
-    console.log('persistResult')
     const committersDb = await customDB.getCommittersDb();
     try {
-      await committersDb.insertMany(this.analysisResult);
+      const persistContribs = this.analysisResult.map(item => {
+        return {
+          source: 'github',
+          id: item.sha,
+          type: 'commit',
+          grade: item.grade,
+          hash: item.sha,
+          author: item.author,
+          committer: item.committer,
+        };
+      })
+      await committersDb.insertMany(persistContribs);
     } catch(err) {
       console.log('persistResult err', err)
     }
