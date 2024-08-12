@@ -26,6 +26,7 @@ class CommitterTask {
     const repoName = this.repo.name;
 
     const searchCommitsUrl = `${GITHUB_API_URL}/repos/${owner}/${repoName}/commits`;
+    console.log('searchCommitsUrl', searchCommitsUrl)
     const params = {
       sort: 'committer-date',
       order: 'desc',
@@ -39,6 +40,7 @@ class CommitterTask {
   
     try {
       const response = await axios.get(searchCommitsUrl, { headers, params });
+      console.log('response.data', response.data)
       this.commits = response.data.items;
       return this.commits;
     } catch (error) {
@@ -60,7 +62,7 @@ class CommitterTask {
     const repoDetails = await Promise.all(repoDetailPromises);
 
     // Filter commits from public repositories
-    const publicCommits = this.commits.filter((commit, index) => !repoDetails[index].data.private);
+    const publicRepos = this.commits.filter((commit, index) => !repoDetails[index].data.private);
 
     this.analysisResult = [];
     const commitHeaders = {
@@ -69,8 +71,8 @@ class CommitterTask {
       Accept: 'application/vnd.github+json',
     };
 
-    for (let i = 0; i < publicCommits.length; i++) {
-      let commit = publicCommits[i];
+    for (let i = 0; i < publicRepos.length; i++) {
+      let commit = publicRepos[i];
       try {
         const commitResp = await axios.get(commit.url, { commitHeaders });
         commit.languages = await this.inferLanguages(commitResp.data.files);

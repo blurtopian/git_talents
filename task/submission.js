@@ -16,8 +16,9 @@ class Submission {
       const repo = await getRandomRepo();
 
       const task = new CommitterTask(repo); 
-      await task.getLatestCommits();
-      await task.analyze();
+      const commits = await task.getLatestCommits();
+      console.log('commits');
+      const result = await task.analyze();
       await task.persistResult(round);
       //const cid = await committerTask.storeResult(round);
       const cid = '';
