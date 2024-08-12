@@ -11,22 +11,35 @@ class Submission {
   constructor() {}
 
   async committersTask(round) {
+    let taskResult = undefined;
     try {
       console.log('task called with round', round);
       const repo = await getRandomRepo();
+      console.log('repo', repo);
 
-      const task = new CommitterTask(repo); 
-      const commits = await task.getLatestCommits();
-      console.log('commits');
-      const result = await task.analyze();
-      await task.persistResult(round);
-      //const cid = await committerTask.storeResult(round);
-      const cid = '';
-      return cid;
+      if (repo) {
+        const task = new CommitterTask(repo); 
+        const commits = await task.getLatestCommits();
+        console.log('commits.length', commits.length);
+        console.log('commit[0]', commits[0]);
+
+        const analysisResult = await task.analyze();
+        console.log('analysisResult.length', analysisResult.length);
+
+        const persistResult = await task.persistResult(round);
+        console.log('persistResult', persistResult);
+
+        // TODO: store/upload result to IPFS
+        //const cid = await committerTask.storeResult(round);
+
+        taskResult = { result: persistResult };
+      }
     } catch (err) {
       console.error('ERROR IN COMMITTERS TASK', err);
       return 'ERROR IN COMMITTERS TASK' + err;
     }
+
+    return taskResult;
   }
 
   async talentTask(round) {

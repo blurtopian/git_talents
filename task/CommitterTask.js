@@ -40,15 +40,17 @@ class CommitterTask {
   
     try {
       const response = await axios.get(searchCommitsUrl, { headers, params });
-      console.log('response.data', response.data)
-      this.commits = response.data.items;
+      this.commits = response.data;
       return this.commits;
     } catch (error) {
-      console.error(`Failed to fetch commits: ${error.response}`);
+      console.error(`Failed to fetch commits: ${error}`);
     }
   }
 
   async analyze() {
+    if (!this.commits || this.commits.length <= 0) {
+      return [];
+    }
     const headers = {
       Authorization: `Bearer ${ACCESS_TOKEN}`,
       'X-GitHub-Api-Version': '2022-11-28',
@@ -56,43 +58,49 @@ class CommitterTask {
     };
 
     // Array to hold promises for fetching repo details
-    const repoDetailPromises = this.commits.map(commit => axios.get(commit.repository.url, { headers }));
+    const commitPromises = this.commits.map(commit => axios.get(commit.url, { headers }));
 
     // Resolve all promises to get repo details
-    const repoDetails = await Promise.all(repoDetailPromises);
+    const commitResponses = await Promise.all(commitPromises);
+    console.log('commitResponses.length', commitResponses.length)
+    console.log('commitResponses[0].data', commitResponses[0].data)
 
-    // Filter commits from public repositories
-    const publicRepos = this.commits.filter((commit, index) => !repoDetails[index].data.private);
+    for (let i = 0; i < commitResponses.length; i++) {
+      let commit = commitResponses[i].data;
+      console.log('commit.url', commit.url)
 
-    this.analysisResult = [];
-    const commitHeaders = {
-      Authorization: `Bearer ${ACCESS_TOKEN}`,
-      'X-GitHub-Api-Version': '2022-11-28',
-      Accept: 'application/vnd.github+json',
-    };
-
-    for (let i = 0; i < publicRepos.length; i++) {
-      let commit = publicRepos[i];
+      console.log('commit.files.length', commit.files.length)
+      if (commit.files.length <= 0) {
+        continue;
+      }
       try {
-        const commitResp = await axios.get(commit.url, { commitHeaders });
-        commit.languages = await this.inferLanguages(commitResp.data.files);
-
-        const owner = commit.repository.owner.login;
-        const repo = commit.repository.name;
-        const hash = commit.sha;
-        console.log('gradeContrib params', {owner, repo, hash})
-
-        const contribGrade = await contribAi.gradeContrib(owner, repo, hash);
-        commit.grade = contribGrade;
-
-        const returnObj = {
-          author: commit.commit.author.email,
-          hash: commit.sha,
-          languages: languages,
-          grade: contribGrade,
+        const languages = await this.inferLanguages(commit.files);
+        if (languages && languages.length > 0) {
+          commit.languages = languages;
         }
 
-        this.analysisResult.push(returnObj);
+        const owner = this.repo.owner.login;
+        const repo = this.repo.name;
+        const hash = commit.sha;
+
+        console.log('gradeContrib params', {owner, repo, hash})
+        const contribGrade = await contribAi.gradeContrib(owner, repo, hash);
+
+        if (contribGrade) {
+          commit.grade = contribGrade;
+  
+          const returnObj = {
+            author: commit.author.login,
+            hash: commit.sha,
+            languages: languages,
+            grade: contribGrade,
+            // optional info
+            author_id: commit.author.id,
+            author_url: commit.author.url,
+          }
+  
+          this.analysisResult.push(returnObj);
+        }
       } catch(err) {
         console.log(err.message);
       } finally {
@@ -118,6 +126,9 @@ class CommitterTask {
   }
 
   async persistResult(round) {
+    if (!this.analysisResult || this.analysisResult.length <= 0) {
+      return 0;
+    }
     const committersDb = await customDB.getCommittersDb();
     try {
       const persistContribs = this.analysisResult.map(item => {
@@ -131,7 +142,9 @@ class CommitterTask {
           committer: item.committer,
         };
       })
-      await committersDb.insertMany(persistContribs);
+      const result = await committersDb.insertMany(persistContribs);
+      console.log('result', result);
+      return result;
     } catch(err) {
       console.log('persistResult err', err)
     }

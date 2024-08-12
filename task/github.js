@@ -2,10 +2,10 @@ const axios = require('axios');
 
 const GITHUB_API_URL = 'https://api.github.com';
 const ACCESS_TOKEN = process.env.GIT_ACCESS_TOKEN; // Replace with your actual token
-const REPO_KEYWORD = process.env.REPO_KEYWORD || 'random'; // You can change this to any keyword you like
-const MAX_REPO_SIZE_BYTES = 10 * 1024 * 1024; // Example condition: 100 MB
+const MIN_REPO_SIZE_BYTES = 1 * 1024 * 1024; // Example condition: 1 MB
 
 async function getRandomRepo() {
+  console.log('getRandomRepo-1');
   try {
     const response = await axios.get(
       `${GITHUB_API_URL}/search/repositories`,
@@ -15,24 +15,29 @@ async function getRandomRepo() {
           Accept: 'application/vnd.github.v3+json',
         },
         params: {
-          q: REPO_KEYWORD,
+          q: 'is:public',
           sort: 'updated',
           order: 'desc'
         }
       },
     );
+    console.log('getRandomRepo-2');
 
     if (response.status != 200) {
+      console.log('getRandomRepo-3');
       throw new Error(`Error fetching data: ${response.statusText}`);
     }
 
     const data = response.data;
     const repositories = data.items;
+    console.log('getRandomRepo-4::repositories.length', repositories.length);
 
     if (repositories && repositories.length > 0) {
+      console.log('getRandomRepo-5');
       let foundRepo = false;
 
       while (!foundRepo) {
+        console.log('getRandomRepo-6');
         const randomIndex = Math.floor(Math.random() * repositories.length);
         const randomRepo = repositories[randomIndex];
          // Remove the selected repository from the list
@@ -40,12 +45,12 @@ async function getRandomRepo() {
 
         // Size is returned in KB, convert to bytes
         const repoSizeBytes = randomRepo.size * 1024;
-        console.log(`Repository: ${randomRepo.full_name}, Size: ${repoSizeBytes} bytes`);
 
-        if (repoSizeBytes <= MAX_REPO_SIZE_BYTES) {
+        if (repoSizeBytes >= MIN_REPO_SIZE_BYTES) {
+          console.log('getRandomRepo-7');
           return randomRepo;
         } else {
-          console.log(`Repository ${repo.full_name} is too large to archive.`);
+          console.log('getRandomRepo-8-continue');
           continue;
         }
       }

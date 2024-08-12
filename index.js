@@ -38,7 +38,7 @@ if (app) {
     res.status(200).json({ result });
   });
 
-  app.get('/committers_task', async (req, res) => {
+  app.post('/committers_task', async (req, res) => {
     let result = await submission.committersTask(0);
     res.status(200).json({ result });
   });
