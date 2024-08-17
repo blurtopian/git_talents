@@ -8,8 +8,8 @@ class CoreLogic {
   }
 
   async submitTask(round) {
-    const talentsSubmission = await task.submission.submitTalentTask(round);
-    return talentsSubmission;
+    const submission = await task.submission.submitCommittersTask(round);
+    return submission;
   }
 
   async auditTask(round) {

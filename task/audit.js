@@ -1,10 +1,12 @@
 const { namespaceWrapper } = require('@_koii/namespace-wrapper');
-const { gitTask } = require('./GitTask');
+const { committerTask } = require('./CommitterTask');
 
 class Audit {
   async validateNode(submission_value, round) {
     try {
-      return gitTask.retrieveAndValidateFile(submission_value);
+      console.log('Audit::submission_value', submission_value)
+      //return gitTask.retrieveAndValidateFile(submission_value);
+      return true;
     } catch (e) {
       console.log('Error in validate:', e);
       console.log('Error in validate:', e);

@@ -7,39 +7,34 @@ const {
 
 const { getRandomRepo } = require('./task/github');
 const { submission } = require('./task/submission');
+const { audit } = require('./task/audit');
 const { customDB } = require('./customDB');
 
 if (app) {
-  //  Write your Express Endpoints here.
-  //  Ex. app.post('/accept-cid', async (req, res) => {})
-
-  // Sample API that return your task state
   app.get('/taskState', async (req, res) => {
     const state = await namespaceWrapper.getTaskState();
     console.log('TASK STATE HERE', state);
     res.status(200).json({ taskState: state });
   });
 
-  // Sample API that return the value stored in NeDB
   app.get('/value', async (req, res) => {
     const value = await namespaceWrapper.storeGet('value');
     console.log('value HERE', value);
     res.status(200).json({ value: value });
   });
 
-  // Sample API that return the value stored in NeDB
   app.get('/github', async (req, res) => {
     await getRandomRepo();
     res.status(200).json({ data: 'none' });
   });
 
-  app.get('/talents_task', async (req, res) => {
-    let result = await submission.talentTask(0);
+  app.post('/committers_task', async (req, res) => {
+    let result = await submission.committersTask(0);
     res.status(200).json({ result });
   });
 
-  app.post('/committers_task', async (req, res) => {
-    let result = await submission.committersTask(0);
+  app.post('/committers_audit', async (req, res) => {
+    let result = await audit.auditTask(0);
     res.status(200).json({ result });
   });
 
@@ -53,16 +48,6 @@ if (app) {
     const committersDb = await customDB.getCommittersDb();
     const result =  await committersDb.remove({}, { multi: true });
     res.status(200).json({ result: `Purge Done! ${result}` });
-  });
-
-  app.get('/reporters_task', async (req, res) => {
-    let result = await submission.reporterTask(0);
-    res.status(200).json({ result });
-  });
-
-  app.get('/pullrequestors_task', async (req, res) => {
-    let result = await submission.pullRequestorTask(0);
-    res.status(200).json({ result });
   });
 
 }
