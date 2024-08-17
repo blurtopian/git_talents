@@ -97,6 +97,10 @@ class CommitterTask {
             // optional info
             author_id: commit.author.id,
             author_url: commit.author.url,
+            repo:  {
+              name: this.repo.name,
+              url: this.repo.url,
+            }
           }
   
           this.analysisResult.push(returnObj);
@@ -140,6 +144,7 @@ class CommitterTask {
           hash: item.sha,
           author: item.author,
           committer: item.committer,
+          repo: item.repo,
         };
       })
       const result = await committersDb.insertMany(persistContribs);

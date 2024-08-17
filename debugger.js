@@ -10,9 +10,9 @@ class Debugger {
   static taskID =
     process.env.TASK_ID || 'AK2P1L8NWGwWarbHeM7tX2mr4hJA7ZVXGSSSz5PWHBHv';
   static webpackedFilePath = process.env.WEBPACKED_FILE_PATH || 'dist/main.js';
-  static keywords = [process.env.TEST_KEYWORD] || ['TEST'];
-  static gitRepo = process.env.GIT_REPO || 'https://github.com/blurtopian/clink_test.git';
+  static keywords = [process.env.REPO_KEYWORD] || ['random'];
   static gitAccessToken = process.env.GIT_ACCESS_TOKEN || '';
+  static contribAiApi = process.env.CONTRIB_AI_API || 'http://localhost:3002';
   static nodeDir = process.env.NODE_DIR || '';
 
   static async getConfig() {
@@ -28,8 +28,8 @@ class Debugger {
       webpackedFilePath: Debugger.webpackedFilePath,
       destinationPath: destinationPath,
       keywords: Debugger.keywords,
-      gitRepo: Debugger.gitRepo,
       gitAccessToken: Debugger.gitAccessToken,
+      contribAiApi: Debugger.contribAiApi,
       logPath: logPath,
       nodeDir: Debugger.nodeDir,
       taskID: Debugger.taskID,

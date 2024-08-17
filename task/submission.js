@@ -32,7 +32,7 @@ class Submission {
         // TODO: store/upload result to IPFS
         //const cid = await committerTask.storeResult(round);
 
-        taskResult = { result: persistResult };
+        taskResult = persistResult;
       }
     } catch (err) {
       console.error('ERROR IN COMMITTERS TASK', err);
