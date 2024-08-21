@@ -13,14 +13,14 @@ const { contributionsApi } = require('./ContributionsApi');
 const GITHUB_API_URL = 'https://api.github.com';
 const ACCESS_TOKEN = process.env.GIT_ACCESS_TOKEN; // Replace with your actual token
 
-class CommitterTask {
-  constructor(repo) {
+class RepoTask {
+  setRepo(repo) {
     this.repo = repo;
     this.commits = [];
     this.analysisResult = [];
   }
 
-  async getLatestCommits() {
+  async getCommits() {
     console.log('repo', this.repo)
     const owner = this.repo.owner.login;
     const repoName = this.repo.name;
@@ -84,16 +84,16 @@ class CommitterTask {
         const hash = commit.sha;
 
         console.log('gradeContrib params', {owner, repo, hash})
-        const contribGrade = await contributionsApi.gradeContrib(owner, repo, hash);
+        const grade = await contributionsApi.gradeContrib(owner, repo, hash);
 
-        if (contribGrade) {
-          commit.grade = contribGrade;
+        if (grade) {
+          commit.grade = grade;
   
           const returnObj = {
             author: commit.author.login,
             hash: commit.sha,
             languages: languages,
-            grade: contribGrade,
+            grade: grade,
             // optional info
             author_id: commit.author.id,
             author_url: commit.author.url,
@@ -147,18 +147,33 @@ class CommitterTask {
           repo: item.repo,
         };
       });
-      const submissionValue = {
+      const dbValue = {
         _id: round,
         round,
         contributions: persistContribs
       }
       const result = await committersDb.insert(
-        submissionValue
+        dbValue
       );
       console.log('result', result);
-      return submissionValue;
+      return dbValue;
     } catch(err) {
       console.log('persistResult err', err)
+    }
+  }
+
+  async postResults(round) {
+    const committersDb = await customDB.getCommittersDb();
+    try {
+      const contributions = await committersDb.find({ _id: round});
+      console.log('retrieved db contributions', contributions);
+
+      const _id = contributionsApi.postSubmissions(contributions);
+      console.log('_id', _id);
+
+      await namespaceWrapper.storeSet(round, _id);
+    } catch(err) {
+      console.log('postResults err', err)
     }
   }
 
@@ -197,6 +212,7 @@ class CommitterTask {
 
 }
 
+const repoTask = new RepoTask();
 module.exports = {
-  CommitterTask,
+  repoTask,
 };

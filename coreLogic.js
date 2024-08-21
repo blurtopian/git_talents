@@ -3,12 +3,11 @@ const task = require('./task');
 
 class CoreLogic {
   async task(round) {
-    const result = await task.submission.committersTask(round);
-    return result;
+    await task.submission.repoTask(round);
   }
 
   async submitTask(round) {
-    const submission = await task.submission.submitCommittersTask(round);
+    const submission = await task.submission.submitTask(round);
     return submission;
   }
 

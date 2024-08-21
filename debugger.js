@@ -12,7 +12,7 @@ class Debugger {
   static webpackedFilePath = process.env.WEBPACKED_FILE_PATH || 'dist/main.js';
   static keywords = [process.env.REPO_KEYWORD] || ['random'];
   static gitAccessToken = process.env.GIT_ACCESS_TOKEN || '';
-  static contribAiApi = process.env.CONTRIB_AI_API || 'http://localhost:3002';
+  static contributionsApi = process.env.CONTRIBUTIONS_API || 'http://localhost:3002';
   static nodeDir = process.env.NODE_DIR || '';
 
   static async getConfig() {
@@ -29,7 +29,7 @@ class Debugger {
       destinationPath: destinationPath,
       keywords: Debugger.keywords,
       gitAccessToken: Debugger.gitAccessToken,
-      contribAiApi: Debugger.contribAiApi,
+      contributionsApi: Debugger.contributionsApi,
       logPath: logPath,
       nodeDir: Debugger.nodeDir,
       taskID: Debugger.taskID,
