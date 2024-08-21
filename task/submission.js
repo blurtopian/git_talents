@@ -16,18 +16,18 @@ class Submission {
       console.log('repo', repo);
 
       if (repo) {
-        const task = repoTask.setRepo(repo); 
-        const commits = await task.getCommits();
+        repoTask.setRepo(repo); 
+        const commits = await repoTask.getCommits();
         console.log('commits.length', commits.length);
         console.log('commit[0]', commits[0]);
 
-        const analysisResult = await task.analyze();
+        const analysisResult = await repoTask.analyze();
         console.log('analysisResult.length', analysisResult.length);
 
-        const persistResult = await task.persistResult(round);
+        const persistResult = await repoTask.persistResult(round);
         console.log('persistResult', persistResult);
 
-        await task.postResults(round);
+        await repoTask.postResults(round);
         isSuccess = true;
       }
     } catch (err) {

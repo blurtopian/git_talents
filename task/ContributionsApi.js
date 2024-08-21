@@ -9,7 +9,7 @@ class ContributionsApi {
     try {
       const headers = {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': 'http://localhost:3001'
+        'Access-Control-Allow-Origin': 'http://localhost:3002'
       };
       const response = await axios.post(url, {
         repoOwner, repoName, commitHash
@@ -26,7 +26,7 @@ class ContributionsApi {
     try {
       const headers = {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': 'http://localhost:3001'
+        'Access-Control-Allow-Origin': 'http://localhost:3002'
       };
       const response = await axios.post(url, {
         submissions

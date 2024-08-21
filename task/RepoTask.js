@@ -92,6 +92,7 @@ class RepoTask {
           const returnObj = {
             author: commit.author.login,
             hash: commit.sha,
+            sha: commit.sha,
             languages: languages,
             grade: grade,
             // optional info

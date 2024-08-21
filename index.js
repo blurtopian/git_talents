@@ -28,8 +28,8 @@ if (app) {
     res.status(200).json({ data: 'none' });
   });
 
-  app.post('/committers_task', async (req, res) => {
-    let result = await submission.committersTask(0);
+  app.post('/repo_task', async (req, res) => {
+    let result = await submission.repoTask(0);
     res.status(200).json({ result });
   });
 
