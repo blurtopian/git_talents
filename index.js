@@ -7,6 +7,7 @@ const {
 
 const { getRandomRepo } = require('./task/github');
 const { submission } = require('./task/submission');
+const { repoTask } = require('./task/RepoTask');
 const { audit } = require('./task/audit');
 const { customDB } = require('./customDB');
 
@@ -23,7 +24,7 @@ if (app) {
     res.status(200).json({ value: value });
   });
 
-  app.get('/github', async (req, res) => {
+  app.get('/random_repo', async (req, res) => {
     await getRandomRepo();
     res.status(200).json({ data: 'none' });
   });
@@ -33,12 +34,26 @@ if (app) {
     res.status(200).json({ result });
   });
 
+  app.post('/submit', async (req, res) => {
+    let result = await submission.submitTask(0);
+    res.status(200).json({ result });
+  });
+
+  app.post('/repo_task_post_results', async (req, res) => {
+    console.log('committers req.query', req.query);
+    const { round } = req.query;
+    console.log('repo_task_post_results req', req);
+    let _id = await repoTask.postResults(round);
+    res.status(200).json({ result: _id });
+  });
+
   app.post('/committers_audit', async (req, res) => {
     let result = await audit.auditTask(0);
     res.status(200).json({ result });
   });
 
   app.get('/committers', async (req, res) => {
+    console.log('committers req.query', req.query);
     const committersDb = await customDB.getCommittersDb();
     const committers = await committersDb.find({});
     res.status(200).json({ result: committers });

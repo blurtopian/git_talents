@@ -21,16 +21,17 @@ class ContributionsApi {
   }
 
 
-  async postSubmissions(submissions) {
-    const url = `${CONTRIBUTIONS_API}/submissions`;
+  async postSubmissions(contributionsByRound) {
+    const url = `${CONTRIBUTIONS_API}/contributions`;
     try {
       const headers = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': 'http://localhost:3002'
       };
-      const response = await axios.post(url, {
-        submissions
-      }, { headers: headers });
+      const response = await axios.post(url,
+        { data: contributionsByRound },
+        { headers: headers }
+      );
       return response.data;
     } catch (error) {
       console.error(`Failed to fetch commits: ${error}`);

@@ -1,5 +1,4 @@
 const { namespaceWrapper } = require('@_koii/namespace-wrapper');
-const { committerTask } = require('./CommitterTask');
 
 class Audit {
   async validateNode(submission_value, round) {

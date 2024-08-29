@@ -67,8 +67,6 @@ class RepoTask {
 
     for (let i = 0; i < commitResponses.length; i++) {
       let commit = commitResponses[i].data;
-      console.log('commit.url', commit.url)
-
       console.log('commit.files.length', commit.files.length)
       if (commit.files.length <= 0) {
         continue;
@@ -108,8 +106,6 @@ class RepoTask {
         }
       } catch(err) {
         console.log(err.message);
-      } finally {
-        continue;
       }
     }
 
@@ -165,14 +161,20 @@ class RepoTask {
 
   async postResults(round) {
     const committersDb = await customDB.getCommittersDb();
+    console.log('postResults typeof round & round', {
+      type: (typeof round),
+      round: round,
+    });
+    const intRound = parseInt(round, 10);
     try {
-      const contributions = await committersDb.find({ _id: round});
-      console.log('retrieved db contributions', contributions);
+      const contributionsByRound = await committersDb.findOne({ _id: intRound });
+      console.log('retrieved db contributions', contributionsByRound);
 
-      const _id = contributionsApi.postSubmissions(contributions);
+      const _id = await contributionsApi.postSubmissions(contributionsByRound);
       console.log('_id', _id);
 
       await namespaceWrapper.storeSet(round, _id);
+      return _id;
     } catch(err) {
       console.log('postResults err', err)
     }

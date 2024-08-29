@@ -27,7 +27,9 @@ class Submission {
         const persistResult = await repoTask.persistResult(round);
         console.log('persistResult', persistResult);
 
-        await repoTask.postResults(round);
+        const postResultCid = await repoTask.postResults(round);
+        console.log('postResultCid', postResultCid)
+
         isSuccess = true;
       }
     } catch (err) {

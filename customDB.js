@@ -20,10 +20,10 @@ class CustomDB {
       return;
     }
 
-    this.initializeTalentsDB();
-    this.initializeCommittersDB();
-    this.initializeReportersDB();
-    this.initializePullRequestorsDB();
+    await this.initializeTalentsDB();
+    await this.initializeCommittersDB();
+    await this.initializeReportersDB();
+    await this.initializePullRequestorsDB();
   }
 
 
