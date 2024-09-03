@@ -30,12 +30,14 @@ if (app) {
   });
 
   app.post('/repo_task', async (req, res) => {
-    let result = await submission.repoTask(0);
+    const { round } = req.query;
+    let result = await submission.repoTask(round);
     res.status(200).json({ result });
   });
 
   app.post('/submit', async (req, res) => {
-    let result = await submission.submitTask(0);
+    const { round } = req.query;
+    let result = await submission.submitTask(round);
     res.status(200).json({ result });
   });
 
@@ -53,9 +55,25 @@ if (app) {
   });
 
   app.get('/committers', async (req, res) => {
+    const { round } = req.query;
+    const intRound = parseInt(round);
     console.log('committers req.query', req.query);
     const committersDb = await customDB.getCommittersDb();
-    const committers = await committersDb.find({});
+    console.log('committersDb', committersDb)
+    let committers;
+    if (intRound) {
+      let query = {
+        $or: [
+          { _id: intRound  },
+          { round: intRound }
+        ]
+      };
+      console.log('committers query', query);
+      committers = await committersDb.find(query);
+    } else {
+      committers = await committersDb.find({});
+    }
+    console.log('committers', committers)
     res.status(200).json({ result: committers });
   });
 
